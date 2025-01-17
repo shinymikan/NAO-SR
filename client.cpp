@@ -11,22 +11,22 @@
 
 //NAO parts
 
-// #include <alerror/alerror.h>
-// #include <alproxies/altexttospeechproxy.h>
+#include <alerror/alerror.h>
+#include <alproxies/altexttospeechproxy.h>
 
-// #define NAO_PORT x
-// #define NAO IP x
+#define NAO_PORT x
+#define NAO IP x
 
-// void forwardToRobot(const std::string& text) {
-//     try {
-//         // Connect to the NAO robot and create a proxy to ALTextToSpeech
-//         AL::ALTextToSpeechProxy tts(NAO_IP, NAO_PORT);
-//         tts.say(text);
-//         std::cout << "NAO said: " << text << std::endl;
-//     } catch (const AL::ALError& e) {
-//         std::cerr << "Error with NAO: " << e.what() << std::endl;
-//     }
-// }
+void forwardToRobot(const std::string& text) {
+    try {
+        // Connect to the NAO robot and create a proxy to ALTextToSpeech
+        AL::ALTextToSpeechProxy tts(NAO_IP, NAO_PORT);
+        tts.say(text);
+        std::cout << "NAO said: " << text << std::endl;
+    } catch (const AL::ALError& e) {
+        std::cerr << "Error with NAO: " << e.what() << std::endl;
+    }
+}
 
 int main() {
     int server_fd, new_socket;
@@ -81,7 +81,7 @@ int main() {
         if (valread > 0) {
             buffer[valread] = '\0'; // null-terminate the received string
             std::cout << "Received: " << buffer << std::endl;
-            //forwardToRobot(buffer); //nao portion
+            forwardToRobot(buffer); //nao portion
         } else {
             std::cerr << "Failed to receive data or connection closed" << std::endl;
         }
