@@ -11,6 +11,7 @@ PORT = 65432        #random port
 # initialize the speech recognition
 recognizer = sr.Recognizer()
 is_listening = False 
+current_language = True
 
 
 def start_recognition(): #starts the sr
@@ -26,13 +27,17 @@ def stop_recognition(): #stops the sr
 
 def listen_speech(): #listen to speech then outputs it to textbox
     global is_listening
+    global current_language
     last_recognized_text = ""
     while is_listening:
         try:
             with sr.Microphone() as source:
                 recognizer.adjust_for_ambient_noise(source, duration = 0.2)
                 audio = recognizer.listen(source)
-                text = recognizer.recognize_google(audio)
+                if current_language:
+                    text = recognizer.recognize_google(audio)
+                else:
+                    text = recognizer.recognize_google(audio, language = "ja-JP")
                 text = text.lower()
 
                 if text != last_recognized_text:  # avoid duplicates
@@ -42,6 +47,16 @@ def listen_speech(): #listen to speech then outputs it to textbox
 
         except sr.UnknownValueError:
             pass
+
+def toggle_language():
+    global current_language
+    if current_language:
+        language_button.config(text = "Japanese")
+        current_language = False
+    else:
+
+        language_button.config(text = "English")
+        current_language = True
         
 def reset_text():
     text_box.delete("1.0", tk.END)
@@ -64,10 +79,10 @@ def send_text():
 # Initialize the GUI
 root = tk.Tk()
 root.title("Speech-to-Text GUI")
-root.geometry("400x300")
+root.geometry("700x500")
 
 #textbox
-text_box = tk.Text(root, wrap=tk.WORD, height=10, width=40)
+text_box = tk.Text(root, wrap=tk.WORD, height=20, width=50)
 text_box.pack(pady=10)
 
 #button frame
@@ -76,20 +91,24 @@ button_frame.pack(side=tk.BOTTOM, fill=tk.X, pady=10)
 
 #start/stop
 start_button = tk.Button(button_frame, text="Start", command=start_recognition, bg="lightgreen", width=10)
-start_button.pack(side=tk.RIGHT, padx=10)
+start_button.pack(side=tk.RIGHT, padx=10, pady=(0, 5))
 
 #send
 send_button = tk.Button(button_frame, text="Send", command=send_text, bg="lightblue", width=10)
 send_button.pack(side=tk.LEFT, padx=10)
 
-
-#status when sent
-status_label = tk.Label(button_frame, text="", fg="green")
-status_label.pack(side=tk.RIGHT, padx=10)
-
 #reset button
 reset_button = tk.Button(button_frame, text="Reset", command=reset_text, bg="yellow", width=5)
 reset_button.pack(side=tk.LEFT, padx=10)
+
+#status when sent
+status_label = tk.Label(button_frame, text="", fg="green")
+status_label.pack(side=tk.LEFT, padx=10)
+
+
+# Language toggle button
+language_button = tk.Button(button_frame, text="English", command=toggle_language, bg="orange", width=10)
+language_button.pack(side=tk.RIGHT, padx=10)
 
 #GUI main loop
 root.mainloop()
